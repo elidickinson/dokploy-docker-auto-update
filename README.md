@@ -39,18 +39,19 @@ Use the "Run Manually" button to verify it works before relying on the schedule.
 
 ### auto-update.sh (Recommended)
 
-Specify project names and the script automatically discovers compose services and their images:
+Specify compose service appNames and the script automatically discovers their images:
 
 ```bash
 API_KEY="your-api-key-here"
 API_URL="http://localhost:3000/api"
-PROJECTS="my-project another-project"  # Space-separated project names
+SERVICES="my-compose-abc123 other-compose-def456"  # Space-separated appNames
 ```
 
-- Queries the Dokploy API to find compose services in each project
+Get the appName from Dokploy UI (shown in compose settings) or via `project.all` API.
+
 - Parses compose files to extract image names automatically
-- Errors if a project name isn't found
-- Redeploys only projects with updated images
+- Errors if an appName isn't found
+- Redeploys only services with updated images
 
 ### single-project.sh
 
@@ -96,7 +97,7 @@ Both scripts include `set -e` for fail-fast and `curl -f` for API error checking
 
 ## Troubleshooting
 
-**Project not found**: Verify the project name matches exactly (case-sensitive). Check `project.all` API response in Swagger.
+**Service not found**: Verify the appName matches exactly (case-sensitive). Check `project.all` API response in Swagger.
 
 **API errors**: Verify your API key is valid. Test curl commands manually via Dokploy's terminal.
 
