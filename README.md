@@ -1,6 +1,8 @@
 # Auto-Update Docker Images in Dokploy
 
-Dokploy caches images locally and doesn't pull fresh versions on redeploy. This script runs as a scheduled job to pull images, compare digests, and redeploy automatically when a a tagged Docker image is updated.
+Dokploy caches images locally and doesn't pull fresh versions on redeploy. You can fix it so manual redeploys pull updated images by adding `pull_policy: always` to the docker compose file, but this assumes you have ready access to the compose file and it still requires a manual action.
+
+This script in this repo runs as a scheduled update job in dokploy that pulls images for the selected services, checks if they've changed, and redploys automatically when needed.
 
 ## Setup
 
