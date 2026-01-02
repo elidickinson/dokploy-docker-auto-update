@@ -1,18 +1,36 @@
 #!/bin/bash
+#
+# API_KEY: Settings → Profile → API/CLI → Generate Token
+# API_URL: Usually http://localhost:3000/api (runs inside Dokploy container)
+# SERVICES: Space-separated appNames (Compose → General → App Name)
 
 set -e
 
 API_KEY="your-api-key-here"
 API_URL="http://localhost:3000/api"
-SERVICES="my-compose-abc123 other-compose-def456"  # Space-separated compose appNames
+SERVICES="my-compose-abc123 other-compose-def456"
 
-# Fetch all projects and extract all compose services
-ALL_COMPOSES=$(curl -sf "$API_URL/project.all" -H "x-api-key: $API_KEY" | jq -r '
-  [.[] | .environments[]?.compose[]? | {appName, composeId}] | .[]
-')
+# Fetch all projects
+ALL_PROJECTS=$(curl -sf "$API_URL/project.all" -H "x-api-key: $API_KEY")
 
 for APP_NAME in $SERVICES; do
-  COMPOSE_ID=$(echo "$ALL_COMPOSES" | jq -r --arg name "$APP_NAME" 'select(.appName == $name) | .composeId')
+  # Extract composeId for this appName
+  COMPOSE_ID=$(echo "$ALL_PROJECTS" | node -e "
+    let d = '';
+    process.stdin.on('data', c => d += c);
+    process.stdin.on('end', () => {
+      for (const p of JSON.parse(d)) {
+        for (const e of p.environments || []) {
+          for (const c of e.compose || []) {
+            if (c.appName === process.argv[1]) {
+              console.log(c.composeId);
+              process.exit(0);
+            }
+          }
+        }
+      }
+    });
+  " "$APP_NAME")
 
   if [ -z "$COMPOSE_ID" ]; then
     echo "ERROR: Compose service '$APP_NAME' not found" >&2

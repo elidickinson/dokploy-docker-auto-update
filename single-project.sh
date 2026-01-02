@@ -1,6 +1,10 @@
 #!/bin/bash
+#
+# API_KEY: Settings → Profile → API/CLI → Generate Token
+# COMPOSE_ID: From URL /service/compose/{composeId}
+# IMAGES: Space-separated images to watch
 
-set -e  # Fail fast on any error
+set -e
 
 API_KEY="your-api-key-here"
 COMPOSE_ID="your-compose-id-here"
